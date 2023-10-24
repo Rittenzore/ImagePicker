@@ -42,11 +42,7 @@ public final class ImagesGalleryViewController: UIViewController {
         collectionView.dataSource = self
         return collectionView
     }()
-    
-    private var oldCompactAppearance: UINavigationBarAppearance?
-    private var oldStandardAppearance: UINavigationBarAppearance?
-    private var oldScrollEdgeAppearance: UINavigationBarAppearance?
-    
+        
     // MARK: - Lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,15 +54,10 @@ public final class ImagesGalleryViewController: UIViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
-    }
-    
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
         
-        UINavigationBar.appearance().compactAppearance = oldCompactAppearance
-        UINavigationBar.appearance().standardAppearance = oldStandardAppearance ?? .init()
-        UINavigationBar.appearance().scrollEdgeAppearance = oldScrollEdgeAppearance
+        navigationController?.navigationBar.standardAppearance = .init()
+        navigationController?.navigationBar.scrollEdgeAppearance = nil
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
 }
 
@@ -76,14 +67,6 @@ private extension ImagesGalleryViewController {
         navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .cancel, target: self, action: #selector(cancelDidTap))
         navigationItem.rightBarButtonItem = rightBarButtonItem
         view.backgroundColor = .systemBackground
-        
-        oldCompactAppearance = UINavigationBar.appearance().compactAppearance
-        oldStandardAppearance = UINavigationBar.appearance().standardAppearance
-        oldScrollEdgeAppearance = UINavigationBar.appearance().scrollEdgeAppearance
-        
-        UINavigationBar.appearance().compactAppearance = nil
-        UINavigationBar.appearance().standardAppearance = .init()
-        UINavigationBar.appearance().scrollEdgeAppearance = nil
     }
     
     func setupView() {
