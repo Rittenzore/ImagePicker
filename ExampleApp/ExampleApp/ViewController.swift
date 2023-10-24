@@ -21,6 +21,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavbarAppearance()
         setupView()
     }
 }
@@ -35,6 +36,26 @@ private extension ViewController {
             height: 50
         )
         view.addSubview(showImagesButton)
+    }
+    
+    func setupNavbarAppearance() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        
+        appearance.largeTitleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)
+        ]
+        
+        appearance.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18)]
+        
+        appearance.shadowColor = .clear
+        appearance.backgroundImage = UIImage()
+        appearance.shadowImage = UIImage()
+        appearance.backgroundColor = UIColor.red
+        
+        UINavigationBar.appearance().compactAppearance = appearance
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 

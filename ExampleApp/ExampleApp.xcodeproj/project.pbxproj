@@ -17,6 +17,7 @@
 		2848CE622AE7977F00EE3B44 /* ImagePicker in Frameworks */ = {isa = PBXBuildFile; productRef = 2848CE612AE7977F00EE3B44 /* ImagePicker */; };
 		2848CE652AE7984200EE3B44 /* ImagePicker in Frameworks */ = {isa = PBXBuildFile; productRef = 2848CE642AE7984200EE3B44 /* ImagePicker */; };
 		2848CE682AE798B100EE3B44 /* ImagePicker in Frameworks */ = {isa = PBXBuildFile; productRef = 2848CE672AE798B100EE3B44 /* ImagePicker */; };
+		2848CE702AE79EE600EE3B44 /* ImagePicker in Frameworks */ = {isa = PBXBuildFile; productRef = 2848CE6F2AE79EE600EE3B44 /* ImagePicker */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 			files = (
 				2848CE682AE798B100EE3B44 /* ImagePicker in Frameworks */,
 				2848CE622AE7977F00EE3B44 /* ImagePicker in Frameworks */,
+				2848CE702AE79EE600EE3B44 /* ImagePicker in Frameworks */,
 				2848CE652AE7984200EE3B44 /* ImagePicker in Frameworks */,
 				2848CE602AE7974400EE3B44 /* ImagePicker in Frameworks */,
 			);
@@ -96,6 +98,7 @@
 				2848CE612AE7977F00EE3B44 /* ImagePicker */,
 				2848CE642AE7984200EE3B44 /* ImagePicker */,
 				2848CE672AE798B100EE3B44 /* ImagePicker */,
+				2848CE6F2AE79EE600EE3B44 /* ImagePicker */,
 			);
 			productName = ExampleApp;
 			productReference = 2848CE472AE796E500EE3B44 /* ExampleApp.app */;
@@ -126,7 +129,7 @@
 			);
 			mainGroup = 2848CE3E2AE796E500EE3B44;
 			packageReferences = (
-				2848CE662AE798B100EE3B44 /* XCLocalSwiftPackageReference ".." */,
+				2848CE6E2AE79EE600EE3B44 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = 2848CE482AE796E500EE3B44 /* Products */;
 			projectDirPath = "";
@@ -390,7 +393,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		2848CE662AE798B100EE3B44 /* XCLocalSwiftPackageReference ".." */ = {
+		2848CE6E2AE79EE600EE3B44 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ..;
 		};
@@ -410,6 +413,10 @@
 			productName = ImagePicker;
 		};
 		2848CE672AE798B100EE3B44 /* ImagePicker */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ImagePicker;
+		};
+		2848CE6F2AE79EE600EE3B44 /* ImagePicker */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ImagePicker;
 		};
