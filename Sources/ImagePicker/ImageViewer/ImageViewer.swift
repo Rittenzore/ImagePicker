@@ -75,6 +75,13 @@ public final class ImageViewer: UIViewController {
 // MARK: - Private methods
 private extension ImageViewer {
     func setupAppearance() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            style: .plain,
+            target: self,
+            action: #selector(xmarkButtonDidTap)
+        )
+        
         navigationItem.rightBarButtonItem = rightBarButtonItem
         view.backgroundColor = .black
     }
@@ -247,6 +254,10 @@ extension ImageViewer: UIPageViewControllerDataSource {
         
         delegate?.uiImageDidSelect(selectedUiImage)
         isRightBarButtonItemSelected.toggle()
+    }
+    
+    func xmarkButtonDidTap() {
+        navigationController?.popViewController(animated: true)
     }
 }
 
