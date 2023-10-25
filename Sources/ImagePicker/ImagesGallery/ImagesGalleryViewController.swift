@@ -127,17 +127,20 @@ extension ImagesGalleryViewController: UICollectionViewDelegate {
         selectedIndexPath = indexPath
         
         let vc = ImageViewer()
+        let navVC = UINavigationController(rootViewController: vc)
         
-        navigationController?.delegate = vc.transitionController
         vc.transitionController.fromDelegate = self
         vc.transitionController.toDelegate = vc
+
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.transitioningDelegate = vc.transitionController
 
         vc.delegate = self
         if let selectedIndexPath { vc.currentIndex = selectedIndexPath.row }
         vc.uiImages = images
         vc.selectedUiImages = selectedImages
         
-        navigationController?.pushViewController(vc, animated: true)
+        present(navVC, animated: true)
     }
 }
 

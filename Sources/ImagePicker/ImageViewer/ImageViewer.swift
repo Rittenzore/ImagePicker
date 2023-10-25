@@ -70,6 +70,14 @@ public final class ImageViewer: UIViewController {
         setupAppearance()
         setupView()
     }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.standardAppearance = .init()
+        navigationController?.navigationBar.scrollEdgeAppearance = nil
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
 }
 
 // MARK: - Private methods
@@ -217,7 +225,7 @@ extension ImageViewer: UIPageViewControllerDataSource {
         case .began:
             currentViewController?.scrollView.isScrollEnabled = false
             transitionController.isInteractive = true
-            navigationController?.popViewController(animated: true)
+            dismiss(animated: true)
             
         case .ended:
             if transitionController.isInteractive {
@@ -257,7 +265,7 @@ extension ImageViewer: UIPageViewControllerDataSource {
     }
     
     func xmarkButtonDidTap() {
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true)
     }
 }
 
