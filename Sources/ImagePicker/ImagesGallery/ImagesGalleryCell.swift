@@ -22,6 +22,10 @@ public final class ImagesGalleryCell: UICollectionViewCell {
         button.setImage(UIImage(systemName: "circle"), for: .normal)
         button.addTarget(self, action: #selector(selectButtonDidTap), for: .touchUpInside)
         button.tintColor = .white
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 5
+        button.layer.shadowOffset = .zero
         return button
     }()
     

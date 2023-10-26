@@ -42,6 +42,8 @@ public final class ImagesGalleryViewController: UIViewController {
         collectionView.dataSource = self
         return collectionView
     }()
+    
+    private lazy var loaderView = UIActivityIndicatorView(style: .medium)
         
     // MARK: - Lifecycle
     public override func viewDidLoad() {
@@ -78,12 +80,21 @@ private extension ImagesGalleryViewController {
             view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor),
             view.rightAnchor.constraint(equalTo: collectionView.rightAnchor)
         ])
+        
+        loaderView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loaderView)
+        NSLayoutConstraint.activate([
+            loaderView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loaderView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+        loaderView.startAnimating()
     }
     
     func fetchData() {
-        imageFetcher.getImages { images in
-            self.images = images
-            self.collectionView.reloadData()
+        imageFetcher.getImages { [weak self] images in
+            self?.images = images
+            self?.loaderView.stopAnimating()
+            self?.collectionView.reloadData()
         }
     }
     

@@ -9,6 +9,8 @@ public final class ImageFetcher: ImageFetcherProtocol {
     
     public var onSignal: ((Signal) -> Void)?
     
+    private let imageCache = NSCache<NSString, UIImage>()
+    
     public func getImages(completion: @escaping ([UIImage]) -> Void) {
         requestAuthorization { [weak self] status in
             switch status {
@@ -59,42 +61,39 @@ public final class ImageFetcher: ImageFetcherProtocol {
 // MARK: - Private methods
 private extension ImageFetcher {
     func fetchPhotos(
-            imageManager: PHImageManager,
-            fetchResult: PHFetchResult<PHAsset>,
-            requestOptions: PHImageRequestOptions,
-            completion: @escaping ([UIImage]) -> Void
-        ) {
-            var output = [UIImage?](repeating: nil, count: fetchResult.count)
-            let dispatchGroup = DispatchGroup()
+        imageManager: PHImageManager,
+        fetchResult: PHFetchResult<PHAsset>,
+        requestOptions: PHImageRequestOptions,
+        completion: @escaping ([UIImage]) -> Void
+    ) {
+        let group = DispatchGroup()
+        var imageWithAssets: [ImageWithAsset] = []
 
-            for index in 0..<fetchResult.count {
-                let asset = fetchResult.object(at: index)
-                let size = CGSize(
-                    width: 200 * UIScreen.main.scale,
-                    height: 200 * UIScreen.main.scale
-                )
-                
-                dispatchGroup.enter()
-                
-                imageManager.requestImage(
-                    for: asset,
-                    targetSize: size,
-                    contentMode: .aspectFill,
-                    options: requestOptions
-                ) { image, _ in
-                    if let image {
-                        output[index] = image
-                    }
-                    
-                    dispatchGroup.leave()
+        for index in 0..<fetchResult.count {
+            group.enter()
+
+            let asset = fetchResult.object(at: index)
+            let size = CGSize(width: 200 * UIScreen.main.scale, height: 200 * UIScreen.main.scale)
+
+            imageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFill, options: requestOptions) { image, _ in
+                if let image = image {
+                    let imageWithAsset = ImageWithAsset(image: image, asset: asset)
+                    imageWithAssets.append(imageWithAsset)
                 }
-            }
-            
-            dispatchGroup.notify(queue: .main) {
-                let sortedImages = output.compactMap { $0 }
-                completion(sortedImages)
+
+                group.leave()
             }
         }
+
+        group.notify(queue: DispatchQueue.global(qos: .userInitiated)) {
+            let sortedImages = imageWithAssets.sorted(by: { $0.asset.creationDate ?? Date() > $1.asset.creationDate ?? Date() })
+            let sortedImagesOnly: [UIImage] = sortedImages.map { $0.image }
+            
+            DispatchQueue.main.async {
+                completion(sortedImagesOnly)
+            }
+        }
+    }
     
     func requestAuthorization(completion: @escaping (_ status: PHAuthorizationStatus) -> Void) {
         PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
@@ -109,4 +108,9 @@ public extension ImageFetcher {
         case onRestrictedPermission
         case onDeniedPersmission
     }
+}
+
+struct ImageWithAsset {
+    let image: UIImage
+    let asset: PHAsset
 }

@@ -11,8 +11,11 @@ public final class ImageViewer: UIViewController {
     
     public var isRightBarButtonItemSelected: Bool = false {
         didSet {
-            rightBarButtonItem.image = UIImage(
-                systemName: isRightBarButtonItemSelected ? "checkmark.circle.fill" : "circle"
+            rightBarButton.setImage(
+                UIImage(
+                    systemName: isRightBarButtonItemSelected ? "checkmark.circle.fill" : "circle"
+                ),
+                for: .normal
             )
         }
     }
@@ -30,14 +33,20 @@ public final class ImageViewer: UIViewController {
         return pageViewController
     }()
     
+    private lazy var rightBarButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "circle"), for: .normal)
+        button.addTarget(self, action: #selector(selectButtonDidTap), for: .touchUpInside)
+        button.tintColor = .white
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 5
+        button.layer.shadowOffset = .zero
+        return button
+    }()
+
     private lazy var rightBarButtonItem: UIBarButtonItem = {
-        let barButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "circle"),
-            style: .plain,
-            target: self,
-            action: #selector(selectButtonDidTap)
-        )
-        barButtonItem.tintColor = .white
+        let barButtonItem = UIBarButtonItem(customView: rightBarButton)
         return barButtonItem
     }()
     
@@ -83,12 +92,16 @@ public final class ImageViewer: UIViewController {
 // MARK: - Private methods
 private extension ImageViewer {
     func setupAppearance() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "xmark"),
-            style: .plain,
-            target: self,
-            action: #selector(xmarkButtonDidTap)
-        )
+        let leftBarButton = UIButton()
+        leftBarButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        leftBarButton.tintColor = .white
+        leftBarButton.layer.shadowColor = UIColor.black.cgColor
+        leftBarButton.layer.shadowOpacity = 0.5
+        leftBarButton.layer.shadowRadius = 5
+        leftBarButton.layer.shadowOffset = .zero
+        leftBarButton.addTarget(self, action: #selector(xmarkButtonDidTap), for: .touchUpInside)
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftBarButton)
         
         navigationItem.rightBarButtonItem = rightBarButtonItem
         view.backgroundColor = .black
