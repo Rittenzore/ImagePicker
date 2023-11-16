@@ -1,8 +1,9 @@
 import UIKit
+import Photos
 
 public protocol ImageViewerDelegate: AnyObject {
     func containerViewController(_ containerViewController: ImageViewer, indexDidUpdate currentIndex: Int)
-    func uiImageDidSelect(_ uiImage: UIImage)
+    func phAssetDidSelect(_ phAsset: PHAsset)
 }
 
 public final class ImageViewer: UIViewController {
@@ -65,8 +66,9 @@ public final class ImageViewer: UIViewController {
         return pageViewController.viewControllers?[0] as? PhotoZoomViewController
     }
     
-    public var uiImages: [UIImage]?
-    public var selectedUiImages = [UIImage]()
+    public var phAssets: [PHAsset]?
+//    public var uiImages: [UIImage]?
+    public var selectedPhAssets = [PHAsset]()
     public var currentIndex = 0
     public var nextIndex: Int?
     
@@ -125,7 +127,7 @@ private extension ImageViewer {
         let vc = PhotoZoomViewController()
         vc.delegate = self
         vc.index = currentIndex
-        vc.uiImage = uiImages?[currentIndex]
+        vc.phAsset = phAssets?[currentIndex]
         singleTapGesture.require(toFail: vc.doubleTapGestureRecognizer)
         
         let viewControllers = [vc]
@@ -156,11 +158,11 @@ private extension ImageViewer {
     }
     
     func updateRightBarButtonItemImage() {
-        let isSelected = selectedUiImages.contains { $0 == uiImages?[currentIndex] }
+        let isSelected = selectedPhAssets.contains { $0 == phAssets?[currentIndex] }
         isRightBarButtonItemSelected = isSelected
         
-        let isReachedSelectionLimit = selectedUiImages.count < selectionLimit
-        let isCurrentIndexImageSelected = selectedUiImages.contains { $0 == uiImages?[currentIndex] }
+        let isReachedSelectionLimit = selectedPhAssets.count < selectionLimit
+        let isCurrentIndexImageSelected = selectedPhAssets.contains { $0 == phAssets?[currentIndex] }
         rightBarButtonItem.isEnabled = isReachedSelectionLimit || isCurrentIndexImageSelected
     }
 }
@@ -212,20 +214,20 @@ extension ImageViewer: UIPageViewControllerDataSource {
         
         let vc = PhotoZoomViewController()
         vc.delegate = self
-        vc.uiImage = uiImages?[currentIndex - 1]
+        vc.phAsset = phAssets?[currentIndex - 1]
         vc.index = currentIndex - 1
         singleTapGesture.require(toFail: vc.doubleTapGestureRecognizer)
         return vc
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let uiImages else { return nil }
-        guard currentIndex != uiImages.count - 1 else { return nil }
+        guard let phAssets else { return nil }
+        guard currentIndex != phAssets.count - 1 else { return nil }
         
         let vc = PhotoZoomViewController()
         singleTapGesture.require(toFail: vc.doubleTapGestureRecognizer)
         vc.delegate = self
-        vc.uiImage = uiImages[currentIndex + 1]
+        vc.phAsset = phAssets[currentIndex + 1]
         vc.index = currentIndex + 1
         return vc
     }
@@ -265,15 +267,15 @@ extension ImageViewer: UIPageViewControllerDataSource {
     }
     
     func selectButtonDidTap() {
-        guard let selectedUiImage = uiImages?[currentIndex] else { return }
-        
-        if selectedUiImages.contains(where: { $0 == selectedUiImage }) {
-            selectedUiImages.removeAll(where: { $0 == selectedUiImage })
+        guard let selectedPhAsset = phAssets?[currentIndex] else { return }
+//
+        if selectedPhAssets.contains(where: { $0 == selectedPhAsset }) {
+            selectedPhAssets.removeAll(where: { $0 == selectedPhAsset })
         } else {
-            selectedUiImages.append(selectedUiImage)
+            selectedPhAssets.append(selectedPhAsset)
         }
         
-        delegate?.uiImageDidSelect(selectedUiImage)
+        delegate?.phAssetDidSelect(selectedPhAsset)
         isRightBarButtonItemSelected.toggle()
     }
     

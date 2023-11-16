@@ -1,7 +1,8 @@
 import UIKit
+import Photos
 
 public protocol ImagesGalleryViewControllerDelegate: AnyObject {
-    func uiImagesDidSelect(selectedUiImages: [UIImage])
+    func phAssetsDidSelect(selectedPhAssets: [PHAsset])
 }
 
 public final class ImagesGalleryViewController: UIViewController {
@@ -12,10 +13,8 @@ public final class ImagesGalleryViewController: UIViewController {
     
     private var selectedIndexPath: IndexPath?
     
-    private var selectedImages = [UIImage]()
-    
-    private let imageFetcher = ImageFetcher()
-    private var images = [UIImage]()
+    private var selectedPhAssets = [PHAsset]()
+    private lazy var allPhotosAssets = [PHAsset]()
     
     private lazy var rightBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(
@@ -91,10 +90,11 @@ private extension ImagesGalleryViewController {
     }
     
     func fetchData() {
-        imageFetcher.getImages { [weak self] images in
-            self?.images = images
-            self?.loaderView.stopAnimating()
-            self?.collectionView.reloadData()
+        ImageFetcher.fetch { assets in
+            self.allPhotosAssets.removeAll()
+            self.allPhotosAssets.append(contentsOf: assets)
+            self.loaderView.stopAnimating()
+            self.collectionView.reloadData()
         }
     }
     
@@ -121,7 +121,6 @@ private extension ImagesGalleryViewController {
             collectionView.scrollToItem(at: selectedIndexPath, at: .centeredVertically, animated: false)
             collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
             collectionView.layoutIfNeeded()
-            
         }
         
         guard let cell = (collectionView.cellForItem(at: selectedIndexPath) as? ImagesGalleryCell) else {
@@ -147,9 +146,9 @@ extension ImagesGalleryViewController: UICollectionViewDelegate {
         navVC.transitioningDelegate = vc.transitionController
 
         vc.delegate = self
-        if let selectedIndexPath { vc.currentIndex = selectedIndexPath.row }
-        vc.uiImages = images
-        vc.selectedUiImages = selectedImages
+        if let selectedIndexPath { vc.currentIndex = selectedIndexPath.item }
+        vc.phAssets = allPhotosAssets
+        vc.selectedPhAssets = selectedPhAssets
         
         present(navVC, animated: true)
     }
@@ -160,13 +159,14 @@ extension ImagesGalleryViewController: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithRegistration(type: ImagesGalleryCell.self, indexPath: indexPath)
         
-        let image = images[indexPath.row]
-        let isSelected = selectedImages.contains(where: { $0 == image })
-        let isSelectable = selectedImages.count < selectionLimit || isSelected
-        let isReachedLimit = selectedImages.count < selectionLimit
+        let imageAsset = allPhotosAssets[indexPath.row]
+        
+        let isSelected = self.selectedPhAssets.contains(where: { $0 == imageAsset })
+        let isSelectable = self.selectedPhAssets.count < selectionLimit || isSelected
+        let isReachedLimit = self.selectedPhAssets.count < selectionLimit
         
         cell.configure(
-            image,
+            imageAsset,
             isSelected: isSelected,
             isSelectable: isSelectable,
             isReachedLimit: isReachedLimit,
@@ -177,7 +177,7 @@ extension ImagesGalleryViewController: UICollectionViewDataSource {
     }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        images.count
+        allPhotosAssets.count
     }
 }
 
@@ -188,21 +188,21 @@ extension ImagesGalleryViewController: UICollectionViewDataSource {
     }
     
     func doneDidTap() {
-        delegate?.uiImagesDidSelect(selectedUiImages: selectedImages)
+        delegate?.phAssetsDidSelect(selectedPhAssets: selectedPhAssets)
         dismiss(animated: true)
     }
 }
 
 // MARK: - ImagesGalleryCellDelegate
 extension ImagesGalleryViewController: ImagesGalleryCellDelegate {
-    public func selectButtonDidTap(uiImage: UIImage) {
-        if selectedImages.contains(where: { $0 == uiImage }) {
-            selectedImages.removeAll(where: { $0 == uiImage })
+    public func selectButtonDidTap(phAsset: PHAsset) {
+        if selectedPhAssets.contains(where: { $0 == phAsset }) {
+            selectedPhAssets.removeAll(where: { $0 == phAsset })
         } else {
-            selectedImages.append(uiImage)
+            selectedPhAssets.append(phAsset)
         }
         
-        rightBarButtonItem.isEnabled = !selectedImages.isEmpty
+        rightBarButtonItem.isEnabled = !selectedPhAssets.isEmpty
         
         collectionView.reloadData()
     }
@@ -261,7 +261,7 @@ extension ImagesGalleryViewController: ImageViewerDelegate {
         collectionView.scrollToItem(at: selectedIndexPath, at: .centeredVertically, animated: false)
     }
     
-    public func uiImageDidSelect(_ uiImage: UIImage) {
-        selectButtonDidTap(uiImage: uiImage)
+    public func phAssetDidSelect(_ phAsset: PHAsset) {
+        selectButtonDidTap(phAsset: phAsset)
     }
 }

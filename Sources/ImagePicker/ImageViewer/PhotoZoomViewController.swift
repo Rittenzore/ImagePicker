@@ -1,4 +1,5 @@
 import UIKit
+import Photos
 
 public protocol PhotoZoomViewControllerDelegate: AnyObject {
     func photoZoomViewController(
@@ -11,7 +12,7 @@ public final class PhotoZoomViewController: UIViewController {
     
     public weak var delegate: PhotoZoomViewControllerDelegate?
     
-    public var uiImage: UIImage?
+    public var phAsset: PHAsset?
     public var index = 0
 
     private(set) lazy var doubleTapGestureRecognizer = UITapGestureRecognizer(
@@ -42,14 +43,17 @@ public final class PhotoZoomViewController: UIViewController {
         
         setupView()
         
-        if let uiImage {
-            imageView.image = uiImage
-            imageView.frame = .init(
-                x: imageView.frame.origin.x,
-                y: imageView.frame.origin.y,
-                width: uiImage.size.width,
-                height: uiImage.size.height
-            )
+        if let phAsset {
+            ImageFetcher.resolveAsset(phAsset) { uiImage in
+                guard let uiImage else { return }
+                self.imageView.image = uiImage
+                self.imageView.frame = .init(
+                    x: self.imageView.frame.origin.x,
+                    y: self.imageView.frame.origin.y,
+                    width: uiImage.size.width,
+                    height: uiImage.size.height
+                )
+            }
         }
     }
     
