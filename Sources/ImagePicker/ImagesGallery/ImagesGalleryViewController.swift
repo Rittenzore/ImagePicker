@@ -90,11 +90,14 @@ private extension ImagesGalleryViewController {
     }
     
     func fetchData() {
-        ImageFetcher.fetch { assets in
-            self.allPhotosAssets.removeAll()
-            self.allPhotosAssets.append(contentsOf: assets)
-            self.loaderView.stopAnimating()
-            self.collectionView.reloadData()
+        ImageFetcher.getPermissionIfNecessary { granted in
+            guard granted else { return }
+            ImageFetcher.fetch { assets in
+                self.allPhotosAssets.removeAll()
+                self.allPhotosAssets.append(contentsOf: assets)
+                self.loaderView.stopAnimating()
+                self.collectionView.reloadData()
+            }
         }
     }
     

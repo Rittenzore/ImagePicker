@@ -11,7 +11,7 @@ public final class ImageFetcher: ImageFetcherProtocol {
     
     private let imageCache = NSCache<NSString, UIImage>()
     
-    public func getPermissionIfNecessary(completionHandler: @escaping (Bool) -> Void) {
+    public static func getPermissionIfNecessary(completionHandler: @escaping (Bool) -> Void) {
         guard PHPhotoLibrary.authorizationStatus() != .authorized else {
             completionHandler(true)
             return
