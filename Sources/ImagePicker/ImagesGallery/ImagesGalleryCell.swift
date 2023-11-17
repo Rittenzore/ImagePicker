@@ -50,6 +50,7 @@ public final class ImagesGalleryCell: UICollectionViewCell {
     
     public func configure(
         _ phAsset: PHAsset,
+        targetImageSize: CGSize,
         isSelected: Bool,
         isSelectable: Bool,
         isReachedLimit: Bool,
@@ -58,7 +59,8 @@ public final class ImagesGalleryCell: UICollectionViewCell {
         self.delegate = delegate
         self.phAsset = phAsset
         
-        ImageFetcher.resolveAsset(phAsset) { uiImage in
+        ImageFetcher.resolveAsset(phAsset, size: targetImageSize) { uiImage in
+            guard let uiImage else { return }
             self.imageView.image = uiImage
         }
         

@@ -16,6 +16,8 @@ public final class ImagesGalleryViewController: UIViewController {
     private var selectedPhAssets = [PHAsset]()
     private lazy var allPhotosAssets = [PHAsset]()
     
+    private let cellSize = CGSize(width: 200, height: 200)
+    
     private lazy var rightBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(
             barButtonSystemItem: .done,
@@ -170,6 +172,7 @@ extension ImagesGalleryViewController: UICollectionViewDataSource {
         
         cell.configure(
             imageAsset,
+            targetImageSize: cellSize,
             isSelected: isSelected,
             isSelectable: isSelectable,
             isReachedLimit: isReachedLimit,
@@ -207,7 +210,12 @@ extension ImagesGalleryViewController: ImagesGalleryCellDelegate {
         
         rightBarButtonItem.isEnabled = !selectedPhAssets.isEmpty
         
-        collectionView.reloadData()
+        if let index = allPhotosAssets.firstIndex(of: phAsset) {
+            let indexPath = IndexPath(item: index, section: 0)
+            UIView.performWithoutAnimation {
+                collectionView.reloadItems(at: [indexPath])
+            }
+        }
     }
 }
 
