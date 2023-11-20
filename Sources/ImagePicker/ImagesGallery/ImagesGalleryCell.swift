@@ -1,13 +1,14 @@
 import UIKit
+import Photos
 
 public protocol ImagesGalleryCellDelegate: AnyObject {
-    func selectButtonDidTap(uiImage: UIImage)
+    func selectButtonDidTap(phAsset: PHAsset)
 }
 
 public final class ImagesGalleryCell: UICollectionViewCell {
     
     private weak var delegate: ImagesGalleryCellDelegate?
-    private var uiImage: UIImage?
+    private var phAsset: PHAsset?
     
     private lazy var darkView: UIView = {
         let view = UIView()
@@ -48,16 +49,20 @@ public final class ImagesGalleryCell: UICollectionViewCell {
     }
     
     public func configure(
-        _ uiImage: UIImage,
+        _ phAsset: PHAsset,
+        targetImageSize: CGSize,
         isSelected: Bool,
         isSelectable: Bool,
         isReachedLimit: Bool,
         delegate: ImagesGalleryCellDelegate? = nil
     ) {
         self.delegate = delegate
-        self.uiImage = uiImage
+        self.phAsset = phAsset
         
-        imageView.image = uiImage
+        ImageFetcher.resolveAsset(phAsset, size: targetImageSize) { uiImage in
+            guard let uiImage else { return }
+            self.imageView.image = uiImage
+        }
         
         selectButton.isHidden = !isSelectable
         selectButton.setImage(
@@ -105,7 +110,7 @@ private extension ImagesGalleryCell {
 // MARK: - Objc methods
 @objc private extension ImagesGalleryCell {
     func selectButtonDidTap() {
-        guard let uiImage else { return }
-        delegate?.selectButtonDidTap(uiImage: uiImage)
+        guard let phAsset else { return }
+        delegate?.selectButtonDidTap(phAsset: phAsset)
     }
 }
