@@ -147,7 +147,7 @@ extension ImagesGalleryViewController: UICollectionViewDelegate {
         vc.transitionController.fromDelegate = self
         vc.transitionController.toDelegate = vc
 
-        navVC.modalPresentationStyle = .fullScreen
+        navVC.modalPresentationStyle = .custom
         navVC.transitioningDelegate = vc.transitionController
 
         vc.delegate = self
