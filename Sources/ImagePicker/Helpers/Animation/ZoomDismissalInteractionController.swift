@@ -21,6 +21,8 @@ public class ZoomDismissalInteractionController: NSObject {
             return
         }
         
+        let containerView = transitionContext.containerView
+
         fromReferenceImageView.isHidden = true
         
         let anchorPoint = CGPoint(x: fromReferenceImageViewFrame.midX, y: fromReferenceImageViewFrame.midY)
@@ -42,9 +44,7 @@ public class ZoomDismissalInteractionController: NSObject {
         toReferenceImageView.isHidden = true
         
         transitionContext.updateInteractiveTransition(1 - scale)
-        
-        toVC.tabBarController?.tabBar.alpha = 1 - backgroundAlpha
-        
+                
         if gestureRecognizer.state == .ended {
             let velocity = gestureRecognizer.velocity(in: fromVC.view)
             if velocity.y < 0 || newCenter.y < anchorPoint.y {
@@ -58,11 +58,10 @@ public class ZoomDismissalInteractionController: NSObject {
                     animations: {
                         transitionImageView.frame = fromReferenceImageViewFrame
                         fromVC.view.alpha = 1.0
-                        toVC.tabBarController?.tabBar.alpha = 0
                     },
                     completion: { completed in
-                        toReferenceImageView.isHidden = false
-                        fromReferenceImageView.isHidden = false
+                        toReferenceImageView.isHidden = !transitionContext.transitionWasCancelled
+                        fromReferenceImageView.isHidden = transitionContext.transitionWasCancelled
                         transitionImageView.removeFromSuperview()
                         animator.transitionImageView = nil
                         transitionContext.cancelInteractiveTransition()
@@ -76,7 +75,7 @@ public class ZoomDismissalInteractionController: NSObject {
             }
             
             // start animation
-            let finalTransitionSize = toReferenceImageViewFrame
+            let finalTransitionSize = toReferenceImageView.convert(toReferenceImageView.bounds, to: containerView)
             
             UIView.animate(
                 withDuration: 0.25,
@@ -85,7 +84,6 @@ public class ZoomDismissalInteractionController: NSObject {
                 animations: {
                     fromVC.view.alpha = 0
                     transitionImageView.frame = finalTransitionSize
-                    toVC.tabBarController?.tabBar.alpha = 1
                 },
                 completion: { completed in
                     transitionImageView.removeFromSuperview()
@@ -149,7 +147,7 @@ extension ZoomDismissalInteractionController: UIViewControllerInteractiveTransit
         
         let referenceImage = fromReferenceImageView.image!
         
-        containerView.insertSubview(toVC.view, belowSubview: fromVC.view)
+//        containerView.insertSubview(toVC.view, belowSubview: fromVC.view)
         if animator.transitionImageView == nil {
             let transitionImageView = UIImageView(image: referenceImage)
             transitionImageView.contentMode = .scaleAspectFill

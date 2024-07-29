@@ -64,7 +64,7 @@ private extension ViewController {
     func showImagesButtonDidTap() {
         let vc = ImagesGalleryViewController()
         let navVC = UINavigationController(rootViewController: vc)
-        navVC.modalPresentationStyle = .fullScreen
+//        navVC.modalPresentationStyle = .fullScreen
         present(navVC, animated: true)
     }
 }
